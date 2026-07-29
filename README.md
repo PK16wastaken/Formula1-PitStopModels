@@ -69,19 +69,94 @@ To bring model inferences into a realistic pit-wall environment, predictions are
 
 ---
 
-### 3. Deep Learning Architecture (Neural Network / Transformer)
+### 3. Deep Learning Architecture (Neural Network)
 
-> *[ PLACEHOLDER: Deep Learning Architecture Section ]*
+This project implements a fully connected feed-forward neural network to predict whether a Formula One driver will pit on the following lap (`PitNextLap`). The model was designed specifically for highly imbalanced race strategy data, where only approximately 3% of laps correspond to pit-stop events.
 
-```
-[ PLACEHOLDER: Neural Network / LSTM / Transformer Architecture Diagram ]
-```
+Unlike the Random Forest baseline, the neural network is capable of learning complex nonlinear interactions between tyre degradation, lap-time trends, race progress, driver identity, and historical rolling statistics. The final implementation uses Binary Focal Cross-Entropy together with class weighting and threshold optimisation to improve minority-class prediction while maintaining a low false positive rate.
+
+During development, extensive hyperparameter optimisation was performed, including tuning of learning rate, dropout, batch size, focal loss parameters, and class weights. Although these experiments occasionally improved validation performance, they frequently encouraged the model to overfit the validation season and reduced its ability to generalise to the unseen 2025 data. Consequently, the strongest final model used a simpler configuration consisting of the default network architecture, Binary Focal Cross-Entropy, and optimisation of only the positive class weight and decision threshold. This produced the most consistent performance on unseen races while avoiding unnecessary model complexity.
+
+---
 
 #### A. Network Topology & Loss Formulation
-> *[ PLACEHOLDER: Insert Details on Network Layers, Activation Functions, Dropout Rates, and Custom Loss Functions (e.g., Focal Loss for Class Imbalance) ]*
 
-#### B. Sequence & Telemetry Embedding
-> *[ PLACEHOLDER: Describe Sequential Input Processing (e.g., LSTM/GRU windows, Attention Mechanisms) ]*
+The final neural network consists of three fully connected hidden layers with Batch Normalisation, ReLU activation functions, and Dropout regularisation.
+
+#### Network Topology
+
+| Layer | Type | Configuration | Activation | Output Shape | Purpose |
+|-------|------|---------------|------------|--------------|---------|
+| Input | Input Layer | 78 engineered features | — | (78) | Accepts numerical and one-hot encoded race features |
+| Hidden Layer 1 | Dense | 128 neurons | ReLU | (128) | Learns high-level nonlinear relationships between race features |
+|  | Batch Normalization | — | — | (128) | Stabilizes activations and accelerates convergence |
+|  | Dropout | Rate = 0.30 | — | (128) | Reduces overfitting by randomly disabling neurons during training |
+| Hidden Layer 2 | Dense | 64 neurons | ReLU | (64) | Learns intermediate feature representations |
+|  | Batch Normalization | — | — | (64) | Improves training stability |
+|  | Dropout | Rate = 0.30 | — | (64) | Additional regularization |
+| Hidden Layer 3 | Dense | 32 neurons | ReLU | (32) | Final nonlinear feature extraction before classification |
+|  | Batch Normalization | — | — | (32) | Maintains stable feature distributions |
+| Output Layer | Dense | 1 neuron | Sigmoid | (1) | Outputs the probability of a pit stop occurring on the next lap |
+
+#### Training Configuration
+
+| Component | Configuration |
+|-----------|---------------|
+| Optimizer | Adam |
+| Initial Learning Rate | 0.001 |
+| Loss Function | Binary Focal Cross-Entropy |
+| Focal Loss γ (Gamma) | 2.0 |
+| Batch Size | 64 |
+| Epochs | Up to 100 (Early Stopping) |
+| Early Stopping | Validation Loss, Patience = 8, Restore Best Weights |
+| Learning Rate Scheduler | ReduceLROnPlateau (Factor = 0.5, Patience = 3, Minimum LR = 1e-6) |
+| Regularization | Batch Normalization + Dropout (0.30) |
+| Class Imbalance Handling | Optimized Positive Class Weight |
+| Decision Rule | Optimized validation threshold maximizing F1-score |
+
+
+The network was trained using the Adam optimizer with Binary Focal Cross-Entropy rather than traditional Binary Cross-Entropy. Focal Loss reduces the influence of easily classified majority-class examples and instead concentrates learning on difficult pit-stop events, making it particularly well suited to the severe class imbalance present within the dataset.
+
+Training stability was further improved through:
+
+- Batch Normalization
+- Dropout regularization
+- Early Stopping
+- ReduceLROnPlateau adaptive learning rate scheduling
+
+---
+
+#### B. Sequential Telemetry Feature Learning
+
+Although the model is not a recurrent architecture such as an LSTM or Transformer, temporal information is incorporated through engineered sequential features computed from each driver's previous laps.
+
+These include:
+
+- Rolling 3-lap average lap time
+- Rolling 5-lap average lap time
+- Rolling degradation averages
+- Rolling lap-time standard deviation
+- Previous lap time
+- Lap-time increase
+- Previous tyre life
+- Tyre wear rate
+- Cumulative degradation
+
+Rather than allowing the neural network to learn temporal dependencies directly, these rolling statistics explicitly encode recent race history into each training example. This approach significantly reduces computational complexity while still providing the model with short-term contextual information required for pit-stop prediction.
+
+---
 
 #### C. Performance Comparison & Benchmarking
-> *[ PLACEHOLDER: Comparative Table contrasting Random Forest vs. Neural Network metrics (Precision, Recall, F1-Score, Inference Latency) ]*
+
+| Model | Precision | Recall | F1-Score | Accuracy | Notes |
+|------|----------:|-------:|---------:|---------:|------|
+| Random Forest Baseline | 0.59 | 0.45 | 0.51 | 97% | Classical machine learning baseline |
+| Baseline Neural Network | 0.63 | 0.17 | 0.27 | 98% | Initial feed-forward network using Binary Cross-Entropy and default threshold |
+| Hyperparameter-Tuned Neural Network | 0.63 | 0.69 | 0.66 | 98% | Extensive optimization of learning rate, dropout, focal loss, batch size, and class weights; improved validation performance but showed signs of overfitting on unseen races |
+| **Final Neural Network** | **0.72** | **0.54** | **0.61** | **98%** | Binary Focal Cross-Entropy with optimized class weight and threshold; selected for strongest real-world precision and generalization |
+
+---
+
+The final neural network intentionally favors precision over recall. While fewer pit stops are predicted overall, the predictions that are made are considerably more reliable. In a real Formula One environment, unnecessary pit-stop recommendations can compromise race strategy and cost significant track position, making false positives substantially more expensive than occasionally missing a potential pit window.
+
+Rather than selecting the model with the highest validation score, the final architecture was chosen based on its ability to generalize to an entirely unseen Formula One season. This produced a simpler, more interpretable model that demonstrated stronger robustness during final evaluation and better reflects the requirements of real-world race strategy prediction.
