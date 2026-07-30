@@ -151,12 +151,13 @@ Rather than allowing the neural network to learn temporal dependencies directly,
 | Model | Precision | Recall | F1-Score | Accuracy | Notes |
 |------|----------:|-------:|---------:|---------:|------|
 | Random Forest Baseline | 0.66 | 0.65 | 0.65 | 98% | Classical machine learning baseline |
-| Baseline Neural Network | 0.18 | 0.92 | 0.30 | 88% | Initial feed-forward network using Binary Cross-Entropy and optimized threshold |
-| Hyperparameter-Tuned Neural Network | 0.00 | 0.00 | 0.00 | 97% | Extensive optimization of learning rate, dropout, focal loss, batch size, and class weights; improved validation performance but aggressively overfitted |
-| *Focal Loss and Manually-Tested Class Weight Network* | *0.70* | *0.70* | *0.70* | *98%* | Showed best overall performance with a much simpler model, but required manual class weight testing rather than an automatic optimization sweep |
-| **Final Neural Network** | **0.68** | **0.46** | **0.55** | **98%** | Binary Focal Cross-Entropy with optimized class weight and threshold; selected for strongest real-world precision and generalization |
-| **Final Neural Network (using F0.5-score)** | **0.70** | **0.39** | **0.50 (0.61 F0.5)** | **98%** | Aimed to obtain higher precision on pit-stops without sacrificing recall |
-| **Final Neural Network (using F0.8-score)** | **0.70** | **0.30** | **0.42 (0.46 F0.8)** | **98%** | Softer approach to achieving higher precision while minimizing loss to recall |
+| Baseline Neural Network (01) | 0.18 | 0.92 | 0.30 | 88% | Initial feed-forward network using Binary Cross-Entropy and optimized threshold |
+| Feature-Engineered Network (02) | 0.57 | 0.66 | 0.61 | 98% | Added extra features like rolling lap times, lap delta, etc. |
+| *Focal Loss and Manually-Tested Class Weight Network (03)* | *0.70* | *0.70* | *0.70* | *98%* | Showed **best overall performance** with a much simpler model, but required manual class weight testing rather than an automatic optimization sweep |
+| Hyperparameter-Tuned Neural Network (04) | 0.00 | 0.00 | 0.00 | 97% | Extensive optimization of learning rate, dropout, focal loss, batch size, and class weights; improved validation performance but aggressively overfitted |
+| **Final Neural Network (06)** | **0.68** | **0.46** | **0.55** | **98%** | Binary Focal Cross-Entropy with optimized class weight and threshold; selected for strongest real-world precision and generalization |
+| **Final Neural Network (using F0.5-score) [07]** | **0.70** | **0.39** | **0.50 (0.61 F0.5)** | **98%** | Aimed to obtain higher precision on pit-stops without sacrificing recall |
+| **Final Neural Network (using F0.8-score) [08]** | **0.70** | **0.30** | **0.42 (0.46 F0.8)** | **98%** | Softer approach to achieving higher precision while minimizing loss to recall |
 
 ---
 
