@@ -151,7 +151,7 @@ Rather than allowing the neural network to learn temporal dependencies directly,
 | Model | Precision | Recall | F1-Score | Accuracy | Notes |
 |------|----------:|-------:|---------:|---------:|------|
 | Random Forest Baseline | 0.66 | 0.65 | 0.65 | 98% | Classical machine learning baseline |
-| Baseline Neural Network (01) | 0.18 | 0.92 | 0.30 | 88% | Initial feed-forward network using Binary Cross-Entropy and optimized threshold |
+| Baseline Neural Network (01) | 0.10 | 0.61 | 0.18 | 85% | Initial feed-forward network using Binary Cross-Entropy and optimized threshold |
 | Feature-Engineered Network (02) | 0.57 | 0.66 | 0.61 | 98% | Added extra features like rolling lap times, lap delta, etc. |
 | *Focal Loss and Manually-Tested Class Weight Network (03)* | *0.70* | *0.70* | *0.70* | *98%* | Showed **best overall performance** with a much simpler model, but required manual class weight testing rather than an automatic optimization sweep |
 | Hyperparameter-Tuned Neural Network (04) | 0.00 | 0.00 | 0.00 | 97% | Extensive optimization of learning rate, dropout, focal loss, batch size, and class weights; improved validation performance but aggressively overfitted |
