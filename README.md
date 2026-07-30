@@ -146,17 +146,20 @@ Rather than allowing the neural network to learn temporal dependencies directly,
 
 ---
 
-#### C. Performance Comparison & Benchmarking
+#### C. Performance Comparison & Benchmarking for the Pit-Stop Class (class 1)
 
 | Model | Precision | Recall | F1-Score | Accuracy | Notes |
 |------|----------:|-------:|---------:|---------:|------|
-| Random Forest Baseline | 0.59 | 0.45 | 0.51 | 97% | Classical machine learning baseline |
-| Baseline Neural Network | 0.63 | 0.17 | 0.27 | 98% | Initial feed-forward network using Binary Cross-Entropy and default threshold |
-| Hyperparameter-Tuned Neural Network | 0.63 | 0.69 | 0.66 | 98% | Extensive optimization of learning rate, dropout, focal loss, batch size, and class weights; improved validation performance but showed signs of overfitting on unseen races |
-| **Final Neural Network** | **0.72** | **0.54** | **0.61** | **98%** | Binary Focal Cross-Entropy with optimized class weight and threshold; selected for strongest real-world precision and generalization |
+| Random Forest Baseline | 0.66 | 0.65 | 0.65 | 98% | Classical machine learning baseline |
+| Baseline Neural Network | 0.18 | 0.92 | 0.30 | 88% | Initial feed-forward network using Binary Cross-Entropy and default threshold |
+| Hyperparameter-Tuned Neural Network | 0.00 | 0.00 | 0.00 | 97% | Extensive optimization of learning rate, dropout, focal loss, batch size, and class weights; improved validation performance but aggressively overfitted |
+| *Focal Loss and Manually-Tested Class Weight Network* | *0.70* | *0.70* | *0.70* | *98%* | Showed best overall performance with a much simpler model, but required manual class weight testing rather than an automatic optimization sweep |
+| **Final Neural Network** | **0.64** | **0.63** | **0.63** | **98%** | Binary Focal Cross-Entropy with optimized class weight and threshold; selected for strongest real-world precision and generalization |
+| **Final Neural Network (using F0.5-score)** | **0.70** | **0.39** | **0.50 (0.61 F0.5)** | **98%** | Aimed to obtain higher precision on pit-stops without sacrificing recall |
+| **Final Neural Network (using F0.8-score)** | **0.70** | **0.30** | **0.42 (0.46 F0.8)** | **98%** | Softer approach to achieving higher precision while minimizing loss to recall |
 
 ---
 
-The final neural network intentionally favors precision over recall. While fewer pit stops are predicted overall, the predictions that are made are considerably more reliable. In a real Formula One environment, unnecessary pit-stop recommendations can compromise race strategy and cost significant track position, making false positives substantially more expensive than occasionally missing a potential pit window.
+The final neural networks intentionally favor precision over recall. While fewer pit stops are predicted overall, the predictions that are made are considerably more reliable. In a real Formula One environment, unnecessary pit-stop recommendations can compromise race strategy and cost significant track position, making false positives substantially more expensive than occasionally missing a potential pit window.
 
 Rather than selecting the model with the highest validation score, the final architecture was chosen based on its ability to generalize to an entirely unseen Formula One season. This produced a simpler, more interpretable model that demonstrated stronger robustness during final evaluation and better reflects the requirements of real-world race strategy prediction.
