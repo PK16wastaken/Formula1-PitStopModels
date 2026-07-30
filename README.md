@@ -87,7 +87,7 @@ The final neural network consists of three fully connected hidden layers with Ba
 
 | Layer | Type | Configuration | Activation | Output Shape | Purpose |
 |-------|------|---------------|------------|--------------|---------|
-| Input | Input Layer | 78 engineered features | — | (78) | Accepts numerical and one-hot encoded race features |
+| Input | Input Layer | 25 engineered features (78 after transformation) | — | (78) | Accepts numerical and one-hot encoded race features |
 | Hidden Layer 1 | Dense | 128 neurons | ReLU | (128) | Learns high-level nonlinear relationships between race features |
 |  | Batch Normalization | — | — | (128) | Stabilizes activations and accelerates convergence |
 |  | Dropout | Rate = 0.30 | — | (128) | Reduces overfitting by randomly disabling neurons during training |
