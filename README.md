@@ -154,7 +154,7 @@ Rather than allowing the neural network to learn temporal dependencies directly,
 | Baseline Neural Network | 0.18 | 0.92 | 0.30 | 88% | Initial feed-forward network using Binary Cross-Entropy and default threshold |
 | Hyperparameter-Tuned Neural Network | 0.00 | 0.00 | 0.00 | 97% | Extensive optimization of learning rate, dropout, focal loss, batch size, and class weights; improved validation performance but aggressively overfitted |
 | *Focal Loss and Manually-Tested Class Weight Network* | *0.70* | *0.70* | *0.70* | *98%* | Showed best overall performance with a much simpler model, but required manual class weight testing rather than an automatic optimization sweep |
-| **Final Neural Network** | **0.64** | **0.63** | **0.63** | **98%** | Binary Focal Cross-Entropy with optimized class weight and threshold; selected for strongest real-world precision and generalization |
+| **Final Neural Network** | **0.68** | **0.46** | **0.55** | **98%** | Binary Focal Cross-Entropy with optimized class weight and threshold; selected for strongest real-world precision and generalization |
 | **Final Neural Network (using F0.5-score)** | **0.70** | **0.39** | **0.50 (0.61 F0.5)** | **98%** | Aimed to obtain higher precision on pit-stops without sacrificing recall |
 | **Final Neural Network (using F0.8-score)** | **0.70** | **0.30** | **0.42 (0.46 F0.8)** | **98%** | Softer approach to achieving higher precision while minimizing loss to recall |
 
